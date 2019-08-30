@@ -14,6 +14,11 @@ import { Hero } from './hero';
 export class HeroService {
   private heroesUrl = 'api/heroes'; 
 
+  constructor(
+    private http: HttpClient,
+    private messageService: MessageService,
+  ) { }
+
   private log(message: string) {
     this.messageService.add(`HeroService: ${message}`);
   }
@@ -49,8 +54,12 @@ export class HeroService {
       )
   }
 
-  constructor(
-    private http: HttpClient,
-    private messageService: MessageService,
-  ) { }
+  updateHero(hero: Hero): Observable<any> {
+    return this.http.put(this.heroesUrl, hero, this.httpOptions)
+      .pipe(
+        tap(_ => this.log(`updated hero id=${hero.id}`)),
+        catchError(this.handleError<any>('updateHero'))
+      )
+  }
+
 }
